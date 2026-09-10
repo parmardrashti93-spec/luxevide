@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LuxeVibe | Modern Apparel & 3D Store</title>
+    
+    <!-- Three.js Library for 3D Flying Objects -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        /* 1. Smooth Scrolling Effect */
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            background-color: #f7f7f9;
+            color: #222;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* Canvas for 3D Objects in the Background */
+        #bg-3d-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: -1; /* Keeps it behind all the text and products */
+            pointer-events: none; /* Allows clicks to go through to the website */
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 50px;
+            background-color: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid #eaeaea;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .logo {
+            font-size: 26px;
+            font-weight: 800;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: #111;
+        }
+
+        nav a {
+            margin-left: 30px;
+            text-decoration: none;
+            color: #555;
+            font-weight: 600;
+            transition: color 0.3s ease;
+        }
+
+        nav a:hover {
+            color: #000;
+        }
+
+        .hero {
+            height: 75vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 0 20px;
+        }
+
+        .hero h1 {
+            font-size: 52px;
+            margin-bottom: 15px;
+            letter-spacing: 1px;
+            color: #111;
+        }
+
+        .hero p {
+            font-size: 18px;
+            margin-bottom: 30px;
+            color: #666;
+        }
+
+        .btn {
+            background-color: #000;
+            color: #fff;
+            padding: 14px 35px;
+            text-decoration: none;
+            font-weight: bold;
+            border-radius: 6px;
+            transition: transform 0.2s, background-color 0.3s;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+
+        .btn:hover {
+            background-color: #333;
+            transform: translateY(-2px);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 60px auto;
+            padding: 0 20px;
+        }
+
+        .section-title {
+            text-align: center;
+            font-size: 30px;
+            margin-bottom: 45px;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: #111;
+        }
+
+        .product-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 30px;
+        }
+
+        .product-card {
+            background: rgba(255, 255, 255, 0.92);
+            backdrop-filter: blur(8px);
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.06);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .product-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 12px 30px rgba(0,0,0,0.1);
+        }
+
+        .product-image {
+            height: 320px;
+            background-size: cover;
+            background-position: center;
+        }
+
+        .product-info {
+            padding: 22px;
+            text-align: center;
+        }
+
+        .product-title {
+            font-size: 17px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #222;
+        }
+
+        .product-price {
+            color: #666;
+            font-size: 15px;
+            margin-bottom: 18px;
+        }
+
+        .buy-btn {
+            display: inline-block;
+            background: #111;
+            color: #fff;
+            padding: 9px 22px;
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: 600;
+            border-radius: 4px;
+            transition: background 0.2s;
+        }
+
+        .buy-btn:hover {
+            background: #444;
+        }
+
+        footer {
+            background-color: #111;
+            color: #aaa;
+            text-align: center;
+            padding: 40px 20px;
+            margin-top: 100px;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- 3D Canvas Background -->
+    <canvas id="bg-3d-canvas"></canvas>
+
+    <!-- Navigation Bar -->
+    <header>
+        <div class="logo">LuxeVibe.</div>
+        <nav>
+            <a href="#">Home</a>
+            <a href="#shop">Shop</a>
+            <a href="#about">About</a>
+            <a href="#contact">Contact</a>
+        </nav>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <h1>Future of Fashion</h1>
+        <p>Explore cutting-edge styles with a touch of modern design.</p>
+        <a href="#shop" class="btn">Explore Collection</a>
+    </section>
+
+    <!-- Shop / Products Section -->
+    <div class="container" id="shop">
+        <h2 class="section-title">Trending Styles</h2>
+        <div class="product-grid">
+            
+            <div class="product-card">
+                <div class="product-image" style="background-image: url('https://images.unsplash.com/photo-1521572267360-ee0c2909d518?auto=format&fit=crop&w=600&q=80');"></div>
+                <div class="product-info">
+                    <div class="product-title">Minimalist Fit Tee</div>
+                    <div class="product-price">$32.00</div>
+                    <a href="#" class="buy-btn">Add to Cart</a>
+                </div>
+            </div>
+
+            <div class="product-card">
+                <div class="product-image" style="background-image: url('https://images.unsplash.com/photo-1551028719-00167b16eac5?auto=format&fit=crop&w=600&q=80');"></div>
+                <div class="product-info">
+                    <div class="product-title">Urban Leather Jacket</div>
+                    <div class="product-price">$160.00</div>
+                    <a href="#" class="buy-btn">Add to Cart</a>
+                </div>
+            </div>
+
+            <div class="product-card">
+                <div class="product-image" style="background-image: url('https://images.unsplash.com/photo-1541099649105-f69ad21f3246?auto=format&fit=crop&w=600&q=80');"></div>
+                <div class="product-info">
+                    <div class="product-title">Classic Streetwear Jeans</div>
+                    <div class="product-price">$85.00</div>
+                    <a href="#" class="buy-btn">Add to Cart</a>
+                </div>
+            </div>
+
+            <div class="product-card">
+                <div class="product-image" style="background-image: url('https://images.unsplash.com/photo-1583743814966-8936f5b7be1a?auto=format&fit=crop&w=600&q=80');"></div>
+                <div class="product-info">
+                    <div class="product-title">Signature Heavy Hoodie</div>
+                    <div class="product-price">$65.00</div>
+                    <a href="#" class="buy-btn">Add to Cart</a>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer id="contact">
+        <p>&copy; 2026 LuxeVibe Apparel. Designed by Shlok Parmar. All rights reserved.</p>
+    </footer>
+
+    <!-- JavaScript: 3D Flying Objects Engine (Three.js) -->
+    <script>
+        // Initialize Scene, Camera, and WebGL Renderer
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer({ canvas: document.getElementById('bg-3d-canvas'), alpha: true });
+        
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setPixelRatio(window.devicePixelRatio);
+
+        // Add soft lighting to highlight 3D shapes
+        const ambientLight = new THREE.AmbientLight(0xffffff, 0.9);
+        scene.add(ambientLight);
+
+        const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
+        directionalLight.position.set(10, 20, 15);
+        scene.add(directionalLight);
+
+        // Create various 3D meshes representing fashion concepts (Boxes for boxes/apparel packages, Tori for rings, Spheres, Cylinders)
+        const floatingObjects = [];
+        const geometries = [
+            new THREE.BoxGeometry(1.2, 1.5, 0.4),  // Clothing tag / box shape
+            new THREE.TorusGeometry(0.8, 0.2, 16, 100), // Fashion ring
+            new THREE.SphereGeometry(0.7, 32, 32), // Orb
+            new THREE.CylinderGeometry(0.6, 0.6, 1.2, 32) // Perfume / accessory style
+        ];
+
+        // Soft, stylish colors matching a modern boutique
+        const colors = [0xd4d4d8, 0xa1a1aa, 0xe4e4e7, 0x71717a];
+
+        for (let i = 0; i < 18; i++) {
+            const geom = geometries[Math.floor(Math.random() * geometries.length)];
+            const material = new THREE.MeshStandardMaterial({ 
+                color: colors[Math.floor(Math.random() * colors.length)],
+                roughness: 0.3,
+                metalness: 0.2,
+                wireframe: Math.random() > 0.7 // A mix of solid and wireframe for tech/fashion look
+            });
+
+            const mesh = new THREE.Mesh(geom, material);
+
+            // Random position spread across the screen
+            mesh.position.x = (Math.random() - 0.5) * 30;
+            mesh.position.y = (Math.random() - 0.5) * 30;
+            mesh.position.z = (Math.random() - 0.5) * 20;
+
+            // Assign unique rotation speeds and flight patterns
+            mesh.userData = {
+                rotSpeedX: (Math.random() - 0.5) * 0.015,
+                rotSpeedY: (Math.random() - 0.5) * 0.015,
+                floatSpeed: Math.random() * 0.008 + 0.003
+            };
+
+            scene.add(mesh);
+            floatingObjects.push(mesh);
+        }
+
+        camera.position.z = 12;
+
+        // Animation Loop (Makes the 3D objects float and spin continuously)
+        function animate() {
+            requestAnimationFrame(animate);
+
+            floatingObjects.forEach((obj, index) => {
+                // Continuous rotation
+                obj.rotation.x += obj.userData.rotSpeedX;
+                obj.rotation.y += obj.userData.rotSpeedY;
+
+                // Gentle floating up and down using a sine wave
+                obj.position.y += Math.sin(Date.now() * 0.001 + index) * obj.userData.floatSpeed;
+            });
+
+            renderer.render(scene, camera);
+        }
+
+        animate();
+
+        // Responsive handling if browser window size changes
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+    </script>
+</body>
+</html>
